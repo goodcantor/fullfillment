@@ -13,7 +13,7 @@ keywords = [
 ]
 
 # Массив ID пользователей, которым будут отправлены уведомления
-users_to_notify = [700326689, 1020324564]  
+users_to_notify = [700326689, 1020324564, 5657842298]  
 
 banned_usernames = ['grouphelpbot']  
 
