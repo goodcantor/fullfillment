@@ -34,6 +34,8 @@ async def handler(event):
     # Преобразование отрицательного ID чата в формат ссылки
     if chat_id < 0:
         chat_id = f"-100{str(chat_id)[4:]}"
+        
+    chat_link = f"https://t.me/{chat.username}" if chat.username else f"tg://openmessage?chat_id={chat_id}"
 
     # Создание URL для сообщения
     message_link = f"https://t.me/c/{chat_id}/{message_id}"
@@ -48,7 +50,8 @@ async def handler(event):
         message_to_send = (
             f"Сообщение от: {sender_name}\n"
             f"Ссылка на профиль: {profile_link}\n"
-            f"Ссылка на сообщение: {message_link}\n\n"
+            f"Ссылка на сообщение: {message_link}\n"
+            f"Ссылка на чат: {chat_link}\n\n"
             f"Текст сообщения:\n{event.raw_text}"
         )
 
