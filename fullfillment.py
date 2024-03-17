@@ -2,20 +2,19 @@ from telethon import TelegramClient, events
 import random
 import asyncio
 
-api_id = 25351228
-api_hash = '0119847ee0bf52185c7ae937dd36346f'
+api_id = 27306467
+api_hash = '5eab758cd12ae881e7f12e19259d5ba9'
 
 client = TelegramClient('anon', api_id, api_hash)
 
 keywords = [
     'фуллфилмент', 'фулфилмент', 'фуллфилимент', 'фулфилимент', 'ффилмент', 'фулфилметн', "фф",
-    'фулфелмент', 'фулфиллмент', 'фулфилмен', 'фулфилмет', 'фуллфилмет', 'фулфилимнет',
+    'фулфелмент', 'фулфиллмент', 'фулфилмен', 'фулфилмет', 'фуллфилмет', 'фулфилимнет', 'филмент', 'филлмент'
 ]
 
-# Массив ID пользователей, которым будут отправлены уведомления
-users_to_notify = [700326689, 1020324564, 5657842298]  
+channel_id = -1002070130553  # ID Telegram канала, куда будут отправляться уведомления
 
-banned_usernames = ['grouphelpbot']  
+banned_usernames = ['grouphelpbot']
 
 @client.on(events.NewMessage(incoming=True))
 async def handler(event):
@@ -29,12 +28,12 @@ async def handler(event):
     chat = await event.get_chat()
     chat_id = chat.id
     
-    if sender.username.lower()[-3:] == 'bot':
-      return
+    if sender_username.endswith('bot'):
+        return
 
     # Преобразование отрицательного ID чата в формат ссылки
     if chat_id < 0:
-        chat_id = str(chat_id)[4:]
+        chat_id = f"-100{str(chat_id)[4:]}"
 
     # Создание URL для сообщения
     message_link = f"https://t.me/c/{chat_id}/{message_id}"
@@ -53,14 +52,17 @@ async def handler(event):
             f"Текст сообщения:\n{event.raw_text}"
         )
 
-        for user_id in users_to_notify:
-            try:
-                # Добавляем рандомную задержку перед отправкой сообщения
-                delay = random.uniform(5, 15)
-                await asyncio.sleep(delay)
-                await client.send_message(user_id, message_to_send)
-            except Exception as e:
-                print(f"Произошла ошибка при отправке сообщения пользователю {user_id}: {e}")
+        try:
+            # Добавляем рандомную задержку перед отправкой сообщения
+            delay = random.uniform(10, 35)
+            await asyncio.sleep(delay)
+            await client.send_message(channel_id, message_to_send)
+        except Exception as e:
+            print(f"Произошла ошибка при отправке сообщения в канал {channel_id}: {e}")
 
-client.start()
-client.run_until_disconnected()
+async def main():
+    await client.start()
+    await client.run_until_disconnected()
+
+if __name__ == '__main__':
+    client.loop.run_until_complete(main())
