@@ -12,9 +12,25 @@ keywords = [
     'фулфелмент', 'фулфиллмент', 'фулфилмен', 'фулфилмет', 'фуллфилмет', 'фулфилимнет', 'филмент', 'филлмент'
 ]
 
+banned_words = [
+    'предлагаю',
+    'предлагает',
+    'предлагаем',
+    'предлагаете',
+    'предлагают',
+    'предложил',
+    'предложила',
+    'предложило',
+    'предложили',
+    'предложить',
+    'предложу',
+    'предложим',
+    'предложишь',
+    'предложите',
+]
 channel_id = -1002070130553  # ID Telegram канала, куда будут отправляться уведомления
 
-banned_usernames = ['grouphelpbot']
+banned_usernames = ['grouphelpbot', 'bgdnbgdn', 'birinim', 'zamerova21', 'Jose8Per', 'Tagranovich', 'bgdnbgdn']
 
 @client.on(events.NewMessage(incoming=True))
 async def handler(event):
@@ -28,7 +44,10 @@ async def handler(event):
     chat = await event.get_chat()
     chat_id = chat.id
     
-    if sender_username.endswith('bot'):
+    if sender_username.endswith('bot') or (len(event.raw_text) > 200):
+        return
+      
+    if any(banned_word.lower() in event.raw_text.lower() for banned_word in banned_words):
         return
 
     # Преобразование отрицательного ID чата в формат ссылки
