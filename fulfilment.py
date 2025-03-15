@@ -3,8 +3,8 @@ import random
 import asyncio
 
 # Телеграм API-ключи
-api_id = 27306467
-api_hash = '5eab758cd12ae881e7f12e19259d5ba9'
+api_id = 20290530
+api_hash = '605c849a8c71e5952db576c39dd0201a'
 
 # ID канала для уведомлений
 channel_id = -1002673291270  
