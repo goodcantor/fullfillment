@@ -1,6 +1,6 @@
+import asyncio
 from telethon import TelegramClient, events
 import random
-import asyncio
 
 # Телеграм API-ключи
 api_id = 20290530
@@ -41,7 +41,7 @@ async def handler(event):
         message_text = getattr(event, 'raw_text', '')
 
         # Отладочный вывод
-        print(f"Новый пост от {sender_username} в чате {chat.id}: {message_text[:50]}...")
+        print(f"📩 Новый пост в чате {chat.id}: {message_text[:50]}...")
 
         # Фильтруем ненужные сообщения
         if sender_username.endswith('bot') or len(message_text) > 200:
@@ -59,9 +59,13 @@ async def handler(event):
             profile_link = f"@{sender_username}" if sender.username else f"tg://openmessage?user_id={sender.id}"
 
             # Формируем корректные ссылки
-            chat_link = f"https://t.me/{chat.username}" if chat.username else f"tg://resolve?domain={chat.id}"
-            chat_id_str = str(chat.id).replace('-100', '')  # Приводим ID к нужному формату
-            message_link = f"https://t.me/c/{chat_id_str}/{message_id}" if chat.id < 0 else f"https://t.me/{chat.username}/{message_id}"
+            if chat.username:
+                chat_link = f"https://t.me/{chat.username}"
+                message_link = f"https://t.me/{chat.username}/{message_id}"
+            else:
+                chat_id_str = str(chat.id).replace('-100', '')  # Приводим ID к нужному формату
+                chat_link = f"tg://resolve?domain={chat.id}"
+                message_link = f"https://t.me/c/{chat_id_str}/{message_id}"
 
             message_to_send = (
                 f"🔔 **Новое сообщение!**\n\n"
@@ -72,7 +76,7 @@ async def handler(event):
                 f"✉️ **Текст:**\n```{message_text}```"
             )
 
-            # Рандомная задержка перед отправкой сообщения
+            # Рандомная задержка перед отправкой сообщения (анти-спам)
             delay = random.uniform(10, 35)
             await asyncio.sleep(delay)
 
@@ -84,9 +88,9 @@ async def handler(event):
         print(f"⚠ Ошибка обработки сообщения: {e}")
 
 async def main():
-    await client.start()
-    print("🔵 Бот запущен и слушает события...")
-    await client.run_until_disconnected()
+    async with client:
+        print("🔵 Бот запущен и слушает события...")
+        await client.run_until_disconnected()
 
 if __name__ == "__main__":
-    client.loop.run_until_complete(main())
+    asyncio.run(main())  # Используем правильный способ запуска asyncio
