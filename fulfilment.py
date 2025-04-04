@@ -93,4 +93,13 @@ async def main():
         await client.run_until_disconnected()
 
 if __name__ == "__main__":
-    asyncio.run(main())  # Используем правильный способ запуска asyncio
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(client.start())
+        print("🔵 Бот запущен и слушает события...")
+        loop.run_until_complete(client.run_until_disconnected())
+    except KeyboardInterrupt:
+        print("⛔ Остановка по Ctrl+C")
+    finally:
+        loop.run_until_complete(client.disconnect())
+        loop.close()
