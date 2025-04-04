@@ -31,6 +31,9 @@ banned_usernames = ['grouphelpbot', 'bgdnbgdn', 'birinim', 'zamerova21', 'Jose8P
 @client.on(events.NewMessage(incoming=True))
 async def handler(event):
     try:
+        # Добавляем небольшую задержку в начале обработки каждого сообщения
+        await asyncio.sleep(0.1)
+        
         if event.is_private:
             return
 
@@ -76,16 +79,21 @@ async def handler(event):
                 f"✉️ **Текст:**\n```{message_text}```"
             )
 
-            # Рандомная задержка перед отправкой сообщения (анти-спам)
-            delay = random.uniform(10, 35)
+            # Увеличиваем минимальную задержку перед отправкой сообщения
+            delay = random.uniform(5, 45)
             await asyncio.sleep(delay)
 
-            # Отправляем сообщение
+            # Добавляем дополнительную проверку перед отправкой
+            if not client.is_connected():
+                await client.connect()
+            
             await client.send_message(channel_id, message_to_send)
             print(f"✅ Сообщение отправлено в {channel_id}")
 
     except Exception as e:
         print(f"⚠ Ошибка обработки сообщения: {e}")
+        # Добавляем задержку при ошибке
+        await asyncio.sleep(1)
 
 async def main():
     async with client:
@@ -93,13 +101,11 @@ async def main():
         await client.run_until_disconnected()
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
     try:
-        loop.run_until_complete(client.start())
         print("🔵 Бот запущен и слушает события...")
-        loop.run_until_complete(client.run_until_disconnected())
+        client.start()
+        client.run_until_disconnected()
     except KeyboardInterrupt:
         print("⛔ Остановка по Ctrl+C")
     finally:
-        loop.run_until_complete(client.disconnect())
-        loop.close()
+        client.disconnect()
