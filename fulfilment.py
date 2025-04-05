@@ -14,7 +14,7 @@ client = TelegramClient('anon', api_id, api_hash)
 # Ключевые слова
 keywords = [
     'фуллфилмент', 'фулфилмент', 'фуллфилимент', 'фулфилимент', 'ффилмент', 'фулфилметн', "фф",
-    'фулфелмент', 'фулфиллмент', 'фулфилмен', 'фулфилмет', 'фуллфилмет', 'фулфилимнет', 'филмент', 'филлмент',
+    'фулфелмент', 'фулфиллмент', 'фулфилмен', 'фулфилмет', 'фуллфилмет', 'фулфилимнет', 'филмент', 'филлмент', 'ищу',
 ]
 
 # Запрещенные слова
@@ -31,12 +31,6 @@ banned_usernames = ['grouphelpbot', 'bgdnbgdn', 'birinim', 'zamerova21', 'Jose8P
 @client.on(events.NewMessage(incoming=True))
 async def handler(event):
     try:
-        # Добавляем небольшую задержку в начале обработки каждого сообщения
-        await asyncio.sleep(0.1)
-        
-        if event.is_private:
-            return
-
         sender = await event.get_sender()
         chat = await event.get_chat()
         message_id = event.id
@@ -47,14 +41,11 @@ async def handler(event):
         print(f"📩 Новый пост в чате {chat.id}: {message_text[:50]}...")
 
         # Фильтруем ненужные сообщения
-        if sender_username.endswith('bot') or len(message_text) > 200:
-            return
-        
-        if any(word.lower() in message_text.lower() for word in banned_words):
+        if sender_username.endswith('bot') or sender_username in banned_usernames or any(word.lower() in message_text.lower() for word in banned_words):
             return
 
         # Проверка на ключевые слова
-        if sender_username not in banned_usernames and any(word.lower() in message_text.lower() for word in keywords):
+        if any(word.lower() in message_text.lower() for word in keywords):
             sender_name = getattr(sender, 'first_name', 'Нет имени')
             if hasattr(sender, 'last_name') and sender.last_name:
                 sender_name += f" {sender.last_name}"
@@ -79,9 +70,9 @@ async def handler(event):
                 f"✉️ **Текст:**\n```{message_text}```"
             )
 
-            # Увеличиваем минимальную задержку перед отправкой сообщения
-            delay = random.uniform(5, 45)
-            await asyncio.sleep(delay)
+            # Удаляем задержку перед отправкой сообщения
+            # delay = random.uniform(5, 45)
+            # await asyncio.sleep(delay)
 
             # Добавляем дополнительную проверку перед отправкой
             if not client.is_connected():
@@ -92,8 +83,8 @@ async def handler(event):
 
     except Exception as e:
         print(f"⚠ Ошибка обработки сообщения: {e}")
-        # Добавляем задержку при ошибке
-        await asyncio.sleep(1)
+        # Удаляем задержку при ошибке
+        # await asyncio.sleep(1)
 
 async def main():
     async with client:
